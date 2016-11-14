@@ -24,9 +24,9 @@ pub fn run_with_closure<F>(val: i32, f: F) -> i32 where F: Fn(i32) -> i32 {
 extern "C" fn run_extern_with_closure_handler<F>(val: c_int, cb: *mut c_void) -> c_int
     where F: Fn(i32) -> i32 {
 
-    let closure = cb as *mut Option<F>;
     unsafe {
-        let res = (*closure).take().unwrap()(val as i32);
+        let closure = (cb as *const F).as_ref();
+        let res = closure.unwrap()(val as i32);
         return res as c_int;
     }
 }
@@ -69,6 +69,23 @@ mod tests {
     #[test]
     fn closure_extern_works() {
         assert_eq!(3, run_extern_with_closure(2, |v| v + 1));
+    }
+
+    #[bench]
+    fn bench_extern(b: &mut Bencher) {
+        unsafe {
+            b.iter(|| super::run(0, ptr::null_mut(), super::extern_inc));
+        }
+    }
+
+    #[bench]
+    fn bench_closure(b: &mut Bencher) {
+        b.iter(|| run_with_closure(0, |v| v + 1));
+    }
+
+    #[bench]
+    fn bench_closure_extern(b: &mut Bencher) {
+        b.iter(|| run_extern_with_closure(0, |v| v + 1));
     }
 }
 
