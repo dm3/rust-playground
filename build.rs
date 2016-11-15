@@ -1,7 +1,7 @@
 extern crate gcc;
 
 fn main() {
-    gcc::Config::new().file("src/main.c")
+    gcc::Config::new().file("src/callbacks.c")
                       .include("src")
-                      .compile("libmain.a");
+                      .compile("libcallbacks.a");
 }
