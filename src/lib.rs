@@ -1,5 +1,7 @@
 #![feature(proc_macro)]
+#![feature(rand)]
 
+extern crate rand;
 extern crate libc;
 
 // extern crate serde;
@@ -16,3 +18,4 @@ extern crate ws;
 
 pub mod callbacks;
 pub mod ws_test;
+pub mod maps;
